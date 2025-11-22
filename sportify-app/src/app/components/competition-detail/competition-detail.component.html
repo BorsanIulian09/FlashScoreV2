@@ -301,7 +301,7 @@
                 </thead>
                 <tbody>
                   @for (scorer of scorersData()!.scorers; track scorer.player.id; let i = $index) {
-                    <tr class="scorer-row" (click)="viewTeam(scorer.team.id)">
+                    <tr class="scorer-row">
                       <td class="rank-cell">
                         <span class="rank-number">{{ i + 1 }}</span>
                       </td>
