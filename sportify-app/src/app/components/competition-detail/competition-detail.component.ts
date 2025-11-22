@@ -1,8 +1,9 @@
-import { Component, OnInit, signal, inject } from '@angular/core';
+import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CompetitionsService } from '../../services/competitions.service';
 import { StandingsResponse, TableTeam } from '../../models/standings.model';
+import { MatchResponse, Match } from '../../models/match.model';
 
 @Component({
   selector: 'app-competition-detail',
@@ -17,15 +18,20 @@ export class CompetitionDetailComponent implements OnInit {
   private competitionsService = inject(CompetitionsService);
   
   standingsData = signal<StandingsResponse | null>(null);
+  matchesData = signal<MatchResponse | null>(null);
   isLoading = signal(true);
+  isLoadingMatches = signal(false);
   error = signal<string | null>(null);
   competitionId = signal<number | null>(null);
+  selectedMatchday = signal<number | null>(null);
+  activeTab = signal<'standings' | 'matches'>('standings');
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.competitionId.set(parseInt(id, 10));
       this.loadStandings(parseInt(id, 10));
+      this.loadMatches(parseInt(id, 10));
     } else {
       this.error.set('Invalid competition ID');
       this.isLoading.set(false);
@@ -89,5 +95,126 @@ export class CompetitionDetailComponent implements OnInit {
 
   viewTeam(teamId: number): void {
     this.router.navigate(['/teams', teamId]);
+  }
+
+  loadMatches(competitionId: number): void {
+    this.isLoadingMatches.set(true);
+    
+    // Always fetch all matches to populate the matchday selector
+    this.competitionsService.getMatches(competitionId).subscribe({
+      next: (response) => {
+        this.matchesData.set(response);
+        
+        // Auto-select current matchday if available
+        // Get current matchday from first match's season, or from standings data
+        let currentMatchday: number | null = null;
+        
+        if (response.matches.length > 0 && response.matches[0].season?.currentMatchday) {
+          currentMatchday = response.matches[0].season.currentMatchday;
+        } else if (this.standingsData()?.season?.currentMatchday) {
+          currentMatchday = this.standingsData()!.season.currentMatchday;
+        }
+        
+        if (currentMatchday !== null) {
+          this.selectedMatchday.set(currentMatchday);
+        } else {
+          // If no current matchday, select the first available matchday
+          const matchdays = Array.from(new Set(
+            response.matches
+              .map(m => m.matchday)
+              .filter(md => md !== null) as number[]
+          )).sort((a, b) => a - b);
+          
+          if (matchdays.length > 0) {
+            this.selectedMatchday.set(matchdays[0]);
+          }
+        }
+        
+        this.isLoadingMatches.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading matches:', err);
+        this.isLoadingMatches.set(false);
+      }
+    });
+  }
+
+  availableMatchdays = computed(() => {
+    const matches = this.matchesData()?.matches || [];
+    const matchdays = new Set<number>();
+    
+    matches.forEach(match => {
+      if (match.matchday !== null) {
+        matchdays.add(match.matchday);
+      }
+    });
+    
+    return Array.from(matchdays).sort((a, b) => a - b);
+  });
+
+  filteredMatches = computed(() => {
+    const matches = this.matchesData()?.matches || [];
+    const selected = this.selectedMatchday();
+    
+    if (selected === null) {
+      return matches;
+    }
+    
+    return matches.filter(match => match.matchday === selected);
+  });
+
+  selectMatchday(matchday: number): void {
+    this.selectedMatchday.set(matchday);
+  }
+
+  formatTime(dateString: string): string {
+    const date = new Date(dateString);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false
+    });
+  }
+
+  getMatchStatusClass(status: string): string {
+    const statusMap: { [key: string]: string } = {
+      'SCHEDULED': 'scheduled',
+      'LIVE': 'live',
+      'IN_PLAY': 'live',
+      'PAUSED': 'live',
+      'FINISHED': 'finished',
+      'POSTPONED': 'postponed',
+      'CANCELLED': 'cancelled',
+      'SUSPENDED': 'suspended'
+    };
+    return statusMap[status] || 'scheduled';
+  }
+
+  setActiveTab(tab: 'standings' | 'matches'): void {
+    this.activeTab.set(tab);
+  }
+
+  // Get competition info from either standings or matches data
+  getCompetitionInfo() {
+    const standings = this.standingsData();
+    const matches = this.matchesData();
+    
+    if (standings) {
+      return {
+        name: standings.competition.name,
+        emblem: standings.competition.emblem,
+        area: standings.area,
+        season: standings.season
+      };
+    } else if (matches && matches.matches.length > 0) {
+      const firstMatch = matches.matches[0];
+      return {
+        name: firstMatch.competition.name,
+        emblem: firstMatch.competition.emblem,
+        area: firstMatch.area,
+        season: firstMatch.season
+      };
+    }
+    return null;
   }
 }

@@ -66,7 +66,7 @@
 }
 
 /* Header Section */
-.standings-content {
+.detail-content {
   max-width: 1400px;
   margin: 0 auto;
   animation: fadeInUp 0.6s ease-out;
@@ -477,5 +477,337 @@
 
   .standings-table {
     min-width: 700px;
+  }
+}
+
+/* Tabs */
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 0.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 1rem 2rem;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.tab-button:hover {
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.tab-button.active {
+  background: white;
+  color: #0f5132;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Matches Section */
+.matches-container {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Matchday Selector */
+.matchday-selector {
+  margin-bottom: 2rem;
+}
+
+.matchday-band {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.matchday-band::-webkit-scrollbar {
+  height: 6px;
+}
+
+.matchday-band::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.matchday-band::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+}
+
+.matchday-band::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.matchday-button {
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.matchday-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+}
+
+.matchday-button.active {
+  background: white;
+  color: #0f5132;
+  border-color: white;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+}
+
+/* Loading Matches */
+.loading-matches {
+  text-align: center;
+  padding: 3rem;
+  color: white;
+}
+
+.loading-matches .spinner {
+  margin: 0 auto 1rem;
+}
+
+/* Matches List */
+.matches-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.match-card {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(10px);
+  border-radius: 16px;
+  padding: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.3s ease;
+}
+
+.match-card:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.match-card.live {
+  border-left: 4px solid #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.match-card.finished {
+  border-left: 4px solid #10b981;
+}
+
+.match-card.postponed,
+.match-card.cancelled,
+.match-card.suspended {
+  border-left: 4px solid #f59e0b;
+  opacity: 0.8;
+}
+
+.match-date-time {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.match-date {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.match-time {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.match-content {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.team-section {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.team-section.home-team {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.team-section.away-team {
+  justify-content: flex-start;
+}
+
+.team-crest-small {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.team-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+}
+
+.match-score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 120px;
+}
+
+.score-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+}
+
+.score-number {
+  min-width: 30px;
+  text-align: center;
+}
+
+.score-separator {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.vs-text {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-weight: 600;
+}
+
+.match-status {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.match-status.scheduled {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.match-status.live {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fecaca;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.match-status.finished {
+  background: rgba(16, 185, 129, 0.3);
+  color: #6ee7b7;
+}
+
+.match-status.postponed,
+.match-status.cancelled,
+.match-status.suspended {
+  background: rgba(245, 158, 11, 0.3);
+  color: #fde68a;
+}
+
+.no-matches {
+  text-align: center;
+  padding: 3rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Responsive Design for Tabs */
+@media (max-width: 768px) {
+  .tabs-container {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .tab-button {
+    padding: 0.875rem 1.5rem;
+  }
+}
+
+/* Responsive Design for Matches */
+@media (max-width: 768px) {
+  .matches-container {
+    padding: 1.5rem;
+  }
+
+  .match-content {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .team-section.home-team {
+    justify-content: center;
+    flex-direction: row;
+  }
+
+  .team-section.away-team {
+    justify-content: center;
+  }
+
+  .match-score {
+    order: -1;
+  }
+
+  .score-display {
+    font-size: 1.25rem;
   }
 }

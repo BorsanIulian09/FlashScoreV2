@@ -22,9 +22,9 @@
     </div>
   }
 
-  <!-- Standings Content -->
-  @if (standingsData() && !isLoading() && !error()) {
-    <div class="standings-content">
+  <!-- Content -->
+  @if ((standingsData() || matchesData()) && !isLoading() && !error()) {
+    <div class="detail-content">
       <!-- Header -->
       <header class="detail-header">
         <button class="back-button" (click)="goBack()" aria-label="Go back to competitions">
@@ -34,121 +34,240 @@
           <span>Back to Competitions</span>
         </button>
         
-        <div class="competition-info">
-          @if (standingsData()!.competition.emblem) {
-            <img 
-              [src]="standingsData()!.competition.emblem" 
-              [alt]="standingsData()!.competition.name"
-              class="competition-emblem"
-              (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3Cpath d=%22M50 20 L60 45 L85 45 L68 63 L75 90 L50 75 L25 90 L32 63 L15 45 L40 45 Z%22 fill=%22%23999%22/%3E%3C/svg%3E'"
-            />
-          }
-          <div class="competition-details">
-            <h1 class="competition-name">{{ standingsData()!.competition.name }}</h1>
-            <div class="competition-meta">
-              @if (standingsData()!.area.flag) {
-                <img [src]="standingsData()!.area.flag" [alt]="standingsData()!.area.name" class="country-flag" />
-              }
-              <span class="country-name">{{ standingsData()!.area.name }}</span>
-              <span class="season-info">
-                Season {{ getSeasonYear(standingsData()!.season.startDate) }}
-              </span>
+        @if (getCompetitionInfo()) {
+          <div class="competition-info">
+            @if (getCompetitionInfo()!.emblem) {
+              <img 
+                [src]="getCompetitionInfo()!.emblem" 
+                [alt]="getCompetitionInfo()!.name"
+                class="competition-emblem"
+                (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3Cpath d=%22M50 20 L60 45 L85 45 L68 63 L75 90 L50 75 L25 90 L32 63 L15 45 L40 45 Z%22 fill=%22%23999%22/%3E%3C/svg%3E'"
+              />
+            }
+            <div class="competition-details">
+              <h1 class="competition-name">{{ getCompetitionInfo()!.name }}</h1>
+              <div class="competition-meta">
+                @if (getCompetitionInfo()!.area.flag) {
+                  <img [src]="getCompetitionInfo()!.area.flag" [alt]="getCompetitionInfo()!.area.name" class="country-flag" />
+                }
+                <span class="country-name">{{ getCompetitionInfo()!.area.name }}</span>
+                <span class="season-info">
+                  Season {{ getSeasonYear(getCompetitionInfo()!.season.startDate) }}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
 
-        <div class="season-dates">
-          <div class="date-item">
-            <span class="date-label">Start Date</span>
-            <span class="date-value">{{ formatDate(standingsData()!.season.startDate) }}</span>
-          </div>
-          <div class="date-item">
-            <span class="date-label">End Date</span>
-            <span class="date-value">{{ formatDate(standingsData()!.season.endDate) }}</span>
-          </div>
-          @if (standingsData()!.season.currentMatchday !== null) {
+          <div class="season-dates">
             <div class="date-item">
-              <span class="date-label">Current Matchday</span>
-              <span class="date-value">{{ standingsData()!.season.currentMatchday }}</span>
+              <span class="date-label">Start Date</span>
+              <span class="date-value">{{ formatDate(getCompetitionInfo()!.season.startDate) }}</span>
             </div>
-          }
-        </div>
+            <div class="date-item">
+              <span class="date-label">End Date</span>
+              <span class="date-value">{{ formatDate(getCompetitionInfo()!.season.endDate) }}</span>
+            </div>
+            @if (getCompetitionInfo()!.season.currentMatchday !== null) {
+              <div class="date-item">
+                <span class="date-label">Current Matchday</span>
+                <span class="date-value">{{ getCompetitionInfo()!.season.currentMatchday }}</span>
+              </div>
+            }
+          </div>
+        }
       </header>
 
-      <!-- Standings Table -->
-      <div class="standings-table-container">
-        <div class="table-header">
-          <h2>League Standings</h2>
-          <div class="legend">
-            <div class="legend-item">
-              <span class="legend-color champions-league"></span>
-              <span>Champions League</span>
+      <!-- Tabs -->
+      <div class="tabs-container">
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'standings'"
+          (click)="setActiveTab('standings')"
+        >
+          Standings
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'matches'"
+          (click)="setActiveTab('matches')"
+        >
+          Matches
+        </button>
+      </div>
+
+      <!-- Standings Tab Content -->
+      @if (activeTab() === 'standings') {
+        @if (standingsData()) {
+          <div class="standings-table-container">
+            <div class="table-header">
+              <h2>League Standings</h2>
+              <div class="legend">
+                <div class="legend-item">
+                  <span class="legend-color champions-league"></span>
+                  <span>Champions League</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color europa-league"></span>
+                  <span>Europa League</span>
+                </div>
+                <div class="legend-item">
+                  <span class="legend-color relegation"></span>
+                  <span>Relegation</span>
+                </div>
+              </div>
             </div>
-            <div class="legend-item">
-              <span class="legend-color europa-league"></span>
-              <span>Europa League</span>
-            </div>
-            <div class="legend-item">
-              <span class="legend-color relegation"></span>
-              <span>Relegation</span>
+
+            <div class="table-wrapper">
+              <table class="standings-table">
+                <thead>
+                  <tr>
+                    <th class="position-col">Pos</th>
+                    <th class="team-col">Team</th>
+                    <th class="stat-col">P</th>
+                    <th class="stat-col">W</th>
+                    <th class="stat-col">D</th>
+                    <th class="stat-col">L</th>
+                    <th class="stat-col">GF</th>
+                    <th class="stat-col">GA</th>
+                    <th class="stat-col">GD</th>
+                    <th class="points-col">Pts</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (team of standingsTable; track team.position) {
+                    <tr [class]="getPositionClass(team.position)" (click)="viewTeam(team.team.id)" class="clickable-row">
+                      <td class="position-cell">
+                        <span class="position-number">{{ team.position }}</span>
+                      </td>
+                      <td class="team-cell">
+                        <div class="team-info">
+                          <img 
+                            [src]="team.team.crest" 
+                            [alt]="team.team.name"
+                            class="team-crest"
+                            (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3C/svg%3E'"
+                          />
+                          <div class="team-details">
+                            <span class="team-name">{{ team.team.shortName || team.team.name }}</span>
+                            <span class="team-tla">{{ team.team.tla }}</span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="stat-cell">{{ team.playedGames }}</td>
+                      <td class="stat-cell">{{ team.won }}</td>
+                      <td class="stat-cell">{{ team.draw }}</td>
+                      <td class="stat-cell">{{ team.lost }}</td>
+                      <td class="stat-cell">{{ team.goalsFor }}</td>
+                      <td class="stat-cell">{{ team.goalsAgainst }}</td>
+                      <td class="stat-cell" [class.positive]="team.goalDifference > 0" [class.negative]="team.goalDifference < 0">
+                        {{ team.goalDifference > 0 ? '+' : '' }}{{ team.goalDifference }}
+                      </td>
+                      <td class="points-cell">
+                        <strong>{{ team.points }}</strong>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
             </div>
           </div>
-        </div>
+        } @else {
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Loading standings...</p>
+          </div>
+        }
+      }
 
-        <div class="table-wrapper">
-          <table class="standings-table">
-            <thead>
-              <tr>
-                <th class="position-col">Pos</th>
-                <th class="team-col">Team</th>
-                <th class="stat-col">P</th>
-                <th class="stat-col">W</th>
-                <th class="stat-col">D</th>
-                <th class="stat-col">L</th>
-                <th class="stat-col">GF</th>
-                <th class="stat-col">GA</th>
-                <th class="stat-col">GD</th>
-                <th class="points-col">Pts</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (team of standingsTable; track team.position) {
-                <tr [class]="getPositionClass(team.position)" (click)="viewTeam(team.team.id)" class="clickable-row">
-                  <td class="position-cell">
-                    <span class="position-number">{{ team.position }}</span>
-                  </td>
-                  <td class="team-cell">
-                    <div class="team-info">
+      <!-- Matches Tab Content -->
+      @if (activeTab() === 'matches') {
+        <div class="matches-container">
+          <!-- Matchday Selector -->
+          @if (availableMatchdays().length > 0) {
+            <div class="matchday-selector">
+              <div class="matchday-band">
+                @for (matchday of availableMatchdays(); track matchday) {
+                  <button
+                    class="matchday-button"
+                    [class.active]="selectedMatchday() === matchday"
+                    (click)="selectMatchday(matchday)"
+                  >
+                    {{ matchday }}
+                  </button>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- Loading Matches -->
+          @if (isLoadingMatches()) {
+            <div class="loading-matches">
+              <div class="spinner"></div>
+              <p>Loading matches...</p>
+            </div>
+          }
+
+          <!-- Matches List -->
+          @if (!isLoadingMatches() && filteredMatches().length > 0) {
+            <div class="matches-list">
+              @for (match of filteredMatches(); track match.id) {
+                <div class="match-card" [class]="getMatchStatusClass(match.status)">
+                  <div class="match-date-time">
+                    <span class="match-date">{{ formatDate(match.utcDate) }}</span>
+                    <span class="match-time">{{ formatTime(match.utcDate) }}</span>
+                  </div>
+                  
+                  <div class="match-content">
+                    <div class="team-section home-team">
                       <img 
-                        [src]="team.team.crest" 
-                        [alt]="team.team.name"
-                        class="team-crest"
+                        [src]="match.homeTeam.crest" 
+                        [alt]="match.homeTeam.name"
+                        class="team-crest-small"
                         (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3C/svg%3E'"
                       />
-                      <div class="team-details">
-                        <span class="team-name">{{ team.team.shortName || team.team.name }}</span>
-                        <span class="team-tla">{{ team.team.tla }}</span>
-                      </div>
+                      <span class="team-name">{{ match.homeTeam.shortName || match.homeTeam.name }}</span>
                     </div>
-                  </td>
-                  <td class="stat-cell">{{ team.playedGames }}</td>
-                  <td class="stat-cell">{{ team.won }}</td>
-                  <td class="stat-cell">{{ team.draw }}</td>
-                  <td class="stat-cell">{{ team.lost }}</td>
-                  <td class="stat-cell">{{ team.goalsFor }}</td>
-                  <td class="stat-cell">{{ team.goalsAgainst }}</td>
-                  <td class="stat-cell" [class.positive]="team.goalDifference > 0" [class.negative]="team.goalDifference < 0">
-                    {{ team.goalDifference > 0 ? '+' : '' }}{{ team.goalDifference }}
-                  </td>
-                  <td class="points-cell">
-                    <strong>{{ team.points }}</strong>
-                  </td>
-                </tr>
+
+                    <div class="match-score">
+                      @if (match.score.fullTime.home !== null && match.score.fullTime.away !== null) {
+                        <div class="score-display">
+                          <span class="score-number">{{ match.score.fullTime.home }}</span>
+                          <span class="score-separator">-</span>
+                          <span class="score-number">{{ match.score.fullTime.away }}</span>
+                        </div>
+                      } @else {
+                        <div class="score-display">
+                          <span class="vs-text">VS</span>
+                        </div>
+                      }
+                      <span class="match-status" [class]="getMatchStatusClass(match.status)">
+                        {{ match.status.replace('_', ' ') }}
+                      </span>
+                    </div>
+
+                    <div class="team-section away-team">
+                      <img 
+                        [src]="match.awayTeam.crest" 
+                        [alt]="match.awayTeam.name"
+                        class="team-crest-small"
+                        (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3C/svg%3E'"
+                      />
+                      <span class="team-name">{{ match.awayTeam.shortName || match.awayTeam.name }}</span>
+                    </div>
+                  </div>
+                </div>
               }
-            </tbody>
-          </table>
+            </div>
+          }
+
+          <!-- No Matches -->
+          @if (!isLoadingMatches() && filteredMatches().length === 0) {
+            <div class="no-matches">
+              <p>No matches found for the selected matchday.</p>
+            </div>
+          }
         </div>
-      </div>
+      }
     </div>
   }
 </div>
