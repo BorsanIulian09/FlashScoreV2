@@ -25,10 +25,6 @@ export class CompetitionsComponent implements OnInit {
     this.loadCompetitions();
   }
 
-  goHome(): void {
-    this.router.navigate(['/']);
-  }
-
   loadCompetitions(): void {
     this.isLoading.set(true);
     this.error.set(null);
@@ -82,5 +78,13 @@ export class CompetitionsComponent implements OnInit {
       month: 'short', 
       day: 'numeric' 
     });
+  }
+
+  goHome(): void {
+    this.router.navigate(['/']);
+  }
+
+  viewCompetition(competitionId: number): void {
+    this.router.navigate(['/competitions', competitionId]);
   }
 }

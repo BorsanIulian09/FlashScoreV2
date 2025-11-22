@@ -10,6 +10,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/competitions/competitions.component').then(m => m.CompetitionsComponent)
   },
   {
+    path: 'competitions/:id',
+    loadComponent: () => import('./components/competition-detail/competition-detail.component').then(m => m.CompetitionDetailComponent)
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full'
