@@ -23,7 +23,7 @@
   }
 
   <!-- Content -->
-  @if ((standingsData() || matchesData()) && !isLoading() && !error()) {
+  @if ((standingsData() || matchesData() || scorersData()) && !isLoading() && !error()) {
     <div class="detail-content">
       <!-- Header -->
       <header class="detail-header">
@@ -47,10 +47,12 @@
             <div class="competition-details">
               <h1 class="competition-name">{{ getCompetitionInfo()!.name }}</h1>
               <div class="competition-meta">
-                @if (getCompetitionInfo()!.area.flag) {
-                  <img [src]="getCompetitionInfo()!.area.flag" [alt]="getCompetitionInfo()!.area.name" class="country-flag" />
+                @if (getCompetitionInfo()!.area?.flag) {
+                  <img [src]="getCompetitionInfo()!.area!.flag" [alt]="getCompetitionInfo()!.area!.name" class="country-flag" />
                 }
-                <span class="country-name">{{ getCompetitionInfo()!.area.name }}</span>
+                @if (getCompetitionInfo()!.area) {
+                  <span class="country-name">{{ getCompetitionInfo()!.area!.name }}</span>
+                }
                 <span class="season-info">
                   Season {{ getSeasonYear(getCompetitionInfo()!.season.startDate) }}
                 </span>
@@ -92,6 +94,13 @@
           (click)="setActiveTab('matches')"
         >
           Matches
+        </button>
+        <button 
+          class="tab-button" 
+          [class.active]="activeTab() === 'scorers'"
+          (click)="setActiveTab('scorers')"
+        >
+          Scorers
         </button>
       </div>
 
@@ -267,6 +276,81 @@
             </div>
           }
         </div>
+      }
+
+      <!-- Scorers Tab Content -->
+      @if (activeTab() === 'scorers') {
+        @if (scorersData()) {
+          <div class="scorers-container">
+            <div class="scorers-header">
+              <h2>Top Scorers</h2>
+            </div>
+
+            <div class="table-wrapper">
+              <table class="scorers-table">
+                <thead>
+                  <tr>
+                    <th class="rank-col">Rank</th>
+                    <th class="player-col">Player</th>
+                    <th class="team-col">Team</th>
+                    <th class="stat-col">Matches</th>
+                    <th class="goals-col">Goals</th>
+                    <th class="stat-col">Assists</th>
+                    <th class="stat-col">Penalties</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (scorer of scorersData()!.scorers; track scorer.player.id; let i = $index) {
+                    <tr class="scorer-row" (click)="viewTeam(scorer.team.id)">
+                      <td class="rank-cell">
+                        <span class="rank-number">{{ i + 1 }}</span>
+                      </td>
+                      <td class="player-cell">
+                        <div class="player-info">
+                          <div class="player-details">
+                            <span class="player-name">{{ scorer.player.name }}</span>
+                            <span class="player-meta">
+                              {{ scorer.player.nationality }} • {{ getAge(scorer.player.dateOfBirth) }} years
+                              @if (scorer.player.section) {
+                                • {{ scorer.player.section }}
+                              }
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+                      <td class="team-cell">
+                        <div class="team-info">
+                          <img 
+                            [src]="scorer.team.crest" 
+                            [alt]="scorer.team.name"
+                            class="team-crest"
+                            (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3C/svg%3E'"
+                          />
+                          <span class="team-name">{{ scorer.team.shortName || scorer.team.name }}</span>
+                        </div>
+                      </td>
+                      <td class="stat-cell">{{ scorer.playedMatches }}</td>
+                      <td class="goals-cell">
+                        <strong>{{ scorer.goals }}</strong>
+                      </td>
+                      <td class="stat-cell">{{ scorer.assists !== null ? scorer.assists : '-' }}</td>
+                      <td class="stat-cell">{{ scorer.penalties !== null ? scorer.penalties : '-' }}</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        } @else if (isLoadingScorers()) {
+          <div class="loading-container">
+            <div class="spinner"></div>
+            <p>Loading scorers...</p>
+          </div>
+        } @else {
+          <div class="no-matches">
+            <p>No scorers data available.</p>
+          </div>
+        }
       }
     </div>
   }

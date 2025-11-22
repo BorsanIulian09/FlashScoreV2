@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { CompetitionsService } from '../../services/competitions.service';
 import { StandingsResponse, TableTeam } from '../../models/standings.model';
 import { MatchResponse, Match } from '../../models/match.model';
+import { ScorersResponse } from '../../models/scorers.model';
 
 @Component({
   selector: 'app-competition-detail',
@@ -19,12 +20,14 @@ export class CompetitionDetailComponent implements OnInit {
   
   standingsData = signal<StandingsResponse | null>(null);
   matchesData = signal<MatchResponse | null>(null);
+  scorersData = signal<ScorersResponse | null>(null);
   isLoading = signal(true);
   isLoadingMatches = signal(false);
+  isLoadingScorers = signal(false);
   error = signal<string | null>(null);
   competitionId = signal<number | null>(null);
   selectedMatchday = signal<number | null>(null);
-  activeTab = signal<'standings' | 'matches'>('standings');
+  activeTab = signal<'standings' | 'matches' | 'scorers'>('standings');
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -32,6 +35,7 @@ export class CompetitionDetailComponent implements OnInit {
       this.competitionId.set(parseInt(id, 10));
       this.loadStandings(parseInt(id, 10));
       this.loadMatches(parseInt(id, 10));
+      this.loadScorers(parseInt(id, 10));
     } else {
       this.error.set('Invalid competition ID');
       this.isLoading.set(false);
@@ -190,14 +194,41 @@ export class CompetitionDetailComponent implements OnInit {
     return statusMap[status] || 'scheduled';
   }
 
-  setActiveTab(tab: 'standings' | 'matches'): void {
+  setActiveTab(tab: 'standings' | 'matches' | 'scorers'): void {
     this.activeTab.set(tab);
   }
 
-  // Get competition info from either standings or matches data
+  loadScorers(competitionId: number, limit?: number, season?: number): void {
+    this.isLoadingScorers.set(true);
+    
+    this.competitionsService.getScorers(competitionId, limit, season).subscribe({
+      next: (response) => {
+        this.scorersData.set(response);
+        this.isLoadingScorers.set(false);
+      },
+      error: (err) => {
+        console.error('Error loading scorers:', err);
+        this.isLoadingScorers.set(false);
+      }
+    });
+  }
+
+  getAge(dateOfBirth: string): number {
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  }
+
+  // Get competition info from either standings, matches, or scorers data
   getCompetitionInfo() {
     const standings = this.standingsData();
     const matches = this.matchesData();
+    const scorers = this.scorersData();
     
     if (standings) {
       return {
@@ -213,6 +244,13 @@ export class CompetitionDetailComponent implements OnInit {
         emblem: firstMatch.competition.emblem,
         area: firstMatch.area,
         season: firstMatch.season
+      };
+    } else if (scorers) {
+      return {
+        name: scorers.competition.name,
+        emblem: scorers.competition.emblem,
+        area: null, // Scorers response doesn't have area
+        season: scorers.season
       };
     }
     return null;

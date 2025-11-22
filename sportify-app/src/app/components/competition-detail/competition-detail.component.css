@@ -811,3 +811,200 @@
     font-size: 1.25rem;
   }
 }
+
+/* Scorers Section */
+.scorers-container {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.scorers-header {
+  margin-bottom: 1.5rem;
+}
+
+.scorers-header h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+}
+
+.scorers-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.scorers-table thead {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.scorers-table th {
+  padding: 1rem;
+  text-align: left;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.rank-col {
+  width: 60px;
+  text-align: center;
+}
+
+.player-col {
+  min-width: 250px;
+}
+
+.scorers-table .team-col {
+  min-width: 200px;
+}
+
+.scorers-table .stat-col {
+  width: 80px;
+  text-align: center;
+}
+
+.goals-col {
+  width: 80px;
+  text-align: center;
+}
+
+.scorers-table tbody tr {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.scorers-table tbody tr.scorer-row {
+  cursor: pointer;
+}
+
+.scorers-table tbody tr.scorer-row:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.01);
+}
+
+.scorers-table td {
+  padding: 1rem;
+  color: white;
+  font-size: 0.9375rem;
+}
+
+.rank-cell {
+  text-align: center;
+}
+
+.rank-number {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  font-weight: 700;
+  font-size: 0.875rem;
+}
+
+.player-cell {
+  padding: 0.75rem 1rem;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.player-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: white;
+  font-size: 0.9375rem;
+}
+
+.player-meta {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 500;
+}
+
+.scorers-table .team-cell {
+  padding: 0.75rem 1rem;
+}
+
+.scorers-table .team-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.scorers-table .team-crest {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.scorers-table .team-name {
+  font-weight: 500;
+  color: white;
+  font-size: 0.9375rem;
+}
+
+.scorers-table .stat-cell {
+  text-align: center;
+  font-weight: 500;
+}
+
+.goals-cell {
+  text-align: center;
+  font-size: 1.125rem;
+}
+
+.goals-cell strong {
+  color: white;
+  font-weight: 700;
+}
+
+/* Responsive Design for Scorers */
+@media (max-width: 768px) {
+  .scorers-container {
+    padding: 1.5rem;
+  }
+
+  .scorers-table {
+    font-size: 0.875rem;
+  }
+
+  .scorers-table th,
+  .scorers-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .player-col {
+    min-width: 200px;
+  }
+
+  .scorers-table .team-col {
+    min-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .scorers-table {
+    min-width: 700px;
+  }
+}
