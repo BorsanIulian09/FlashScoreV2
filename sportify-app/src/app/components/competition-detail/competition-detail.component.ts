@@ -86,4 +86,8 @@ export class CompetitionDetailComponent implements OnInit {
     if (position >= this.standingsTable.length - 3) return 'relegation';
     return '';
   }
+
+  viewTeam(teamId: number): void {
+    this.router.navigate(['/teams', teamId]);
+  }
 }

@@ -316,8 +316,13 @@
   transition: all 0.2s ease;
 }
 
-.standings-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.1);
+.standings-table tbody tr.clickable-row {
+  cursor: pointer;
+}
+
+.standings-table tbody tr.clickable-row:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: scale(1.01);
 }
 
 .standings-table tbody tr.champions-league {

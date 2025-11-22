@@ -113,7 +113,7 @@
             </thead>
             <tbody>
               @for (team of standingsTable; track team.position) {
-                <tr [class]="getPositionClass(team.position)">
+                <tr [class]="getPositionClass(team.position)" (click)="viewTeam(team.team.id)" class="clickable-row">
                   <td class="position-cell">
                     <span class="position-number">{{ team.position }}</span>
                   </td>

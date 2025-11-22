@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CompetitionsResponse } from '../models/competition.model';
 import { StandingsResponse } from '../models/standings.model';
+import { Team } from '../models/team.model';
 
 @Injectable({
   providedIn: 'root'
@@ -21,5 +22,9 @@ export class CompetitionsService {
       url += `?season=${season}`;
     }
     return this.http.get<StandingsResponse>(url);
+  }
+
+  getTeam(teamId: number): Observable<Team> {
+    return this.http.get<Team>(`${this.apiUrl}/teams/${teamId}`);
   }
 }

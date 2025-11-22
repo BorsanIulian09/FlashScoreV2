@@ -14,6 +14,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/competition-detail/competition-detail.component').then(m => m.CompetitionDetailComponent)
   },
   {
+    path: 'teams/:id',
+    loadComponent: () => import('./components/team-detail/team-detail.component').then(m => m.TeamDetailComponent)
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full'

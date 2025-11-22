@@ -1,0 +1,199 @@
+<div class="team-container">
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading team details...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+    <div class="error-container">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p>{{ error() }}</p>
+      <div class="error-actions">
+        <button class="retry-btn" (click)="teamId() && loadTeam(teamId()!)">Try Again</button>
+        <button class="back-btn" (click)="goBack()">Go Back</button>
+      </div>
+    </div>
+  }
+
+  <!-- Team Details -->
+  @if (team() && !isLoading() && !error()) {
+    <div class="team-content">
+      <!-- Header -->
+      <header class="team-header">
+        <button class="back-button" (click)="goBack()" aria-label="Go back">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span>Back</span>
+        </button>
+
+        <div class="team-info-section">
+          <div class="team-crest-large">
+            <img 
+              [src]="team()!.crest" 
+              [alt]="team()!.name"
+              class="team-crest-img"
+              (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3C/svg%3E'"
+            />
+          </div>
+          
+          <div class="team-details">
+            <h1 class="team-name">{{ team()!.name }}</h1>
+            <div class="team-meta">
+              @if (team()!.area.flag) {
+                <img [src]="team()!.area.flag" [alt]="team()!.area.name" class="country-flag" />
+              }
+              <span class="country-name">{{ team()!.area.name }}</span>
+              <span class="team-tla">{{ team()!.tla }}</span>
+            </div>
+            
+            <div class="team-stats">
+              <div class="stat-item">
+                <span class="stat-label">Founded</span>
+                <span class="stat-value">{{ team()!.founded }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Venue</span>
+                <span class="stat-value">{{ team()!.venue }}</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">Colors</span>
+                <span class="stat-value">{{ team()!.clubColors }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- Team Info Cards -->
+      <div class="info-cards">
+        <div class="info-card">
+          <div class="card-icon">📍</div>
+          <div class="card-content">
+            <span class="card-label">Address</span>
+            <span class="card-value">{{ team()!.address }}</span>
+          </div>
+        </div>
+        
+        @if (team()!.website) {
+          <a [href]="team()!.website" target="_blank" rel="noopener" class="info-card link-card">
+            <div class="card-icon">🌐</div>
+            <div class="card-content">
+              <span class="card-label">Website</span>
+              <span class="card-value">{{ team()!.website }}</span>
+            </div>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M6 3h7v7M13 3l-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </a>
+        }
+      </div>
+
+      <!-- Coach Info -->
+      @if (team()!.coach) {
+        <div class="coach-section">
+          <h2 class="section-title">Coach</h2>
+          <div class="coach-card">
+            <div class="coach-info">
+              <div class="coach-name">{{ team()!.coach.name }}</div>
+              <div class="coach-details">
+                <span class="coach-nationality">{{ team()!.coach.nationality }}</span>
+                <span class="coach-age">Age {{ getAge(team()!.coach.dateOfBirth) }}</span>
+              </div>
+              @if (team()!.coach.contract) {
+                <div class="coach-contract">
+                  Contract: {{ team()!.coach.contract.start }} - {{ team()!.coach.contract.until }}
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- Running Competitions -->
+      @if (team()!.runningCompetitions && team()!.runningCompetitions.length > 0) {
+        <div class="competitions-section">
+          <h2 class="section-title">Competitions</h2>
+          <div class="competitions-grid">
+            @for (comp of team()!.runningCompetitions; track comp.id) {
+              <div class="competition-chip" (click)="navigateToCompetition(comp.id)">
+                @if (comp.emblem) {
+                  <img [src]="comp.emblem" [alt]="comp.name" class="comp-emblem-small" />
+                }
+                <span>{{ comp.name }}</span>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Squad Section -->
+      <div class="squad-section">
+        <div class="squad-header">
+          <h2 class="section-title">Squad</h2>
+          
+          <!-- Position Filter -->
+          <div class="position-filters">
+            @for (filter of positionFilters; track filter) {
+              <button 
+                class="filter-btn"
+                [class.active]="selectedPosition() === filter"
+                (click)="onPositionFilterChange(filter)"
+              >
+                {{ filter }}
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="squad-table-container">
+          <div class="table-wrapper">
+            <table class="squad-table">
+              <thead>
+                <tr>
+                  <th class="name-col">Name</th>
+                  <th class="position-col">Position</th>
+                  <th class="nationality-col">Nationality</th>
+                  <th class="age-col">Age</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (player of filteredSquad; track player.id) {
+                  <tr>
+                    <td class="name-cell">
+                      <span class="player-name">{{ player.name }}</span>
+                    </td>
+                    <td class="position-cell">
+                      <span class="player-position">{{ player.position }}</span>
+                    </td>
+                    <td class="nationality-cell">
+                      <span class="player-nationality">{{ player.nationality }}</span>
+                    </td>
+                    <td class="age-cell">
+                      <span class="player-age">{{ getAge(player.dateOfBirth) }}</span>
+                    </td>
+                  </tr>
+                }
+
+                @if (filteredSquad.length === 0) {
+                  <tr>
+                    <td colspan="4" class="no-players">
+                      <p>No players found in this position</p>
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
