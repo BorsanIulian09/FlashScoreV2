@@ -1,0 +1,154 @@
+<div class="competitions-container">
+  <!-- Header Section -->
+  <header class="competitions-header">
+    <div class="header-content">
+      <button class="back-button" (click)="goHome()" aria-label="Go back to home">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M12.5 15L7.5 10L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span>Home</span>
+      </button>
+      <h1 class="page-title">Football Competitions</h1>
+      <p class="page-subtitle">Explore leagues and tournaments from around the world</p>
+    </div>
+  </header>
+
+  <!-- Filters Section -->
+  <div class="filters-section">
+    <div class="search-container">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M9 17A8 8 0 1 0 9 1a8 8 0 0 0 0 16zM18 18l-4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <input 
+        type="text" 
+        class="search-input"
+        placeholder="Search competitions or countries..."
+        [value]="searchQuery()"
+        (input)="onSearchChange($event)"
+      />
+    </div>
+
+    <div class="type-filters">
+      <button 
+        class="filter-btn"
+        [class.active]="selectedType() === 'ALL'"
+        (click)="onTypeFilterChange('ALL')"
+      >
+        All
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedType() === 'LEAGUE'"
+        (click)="onTypeFilterChange('LEAGUE')"
+      >
+        Leagues
+      </button>
+      <button 
+        class="filter-btn"
+        [class.active]="selectedType() === 'CUP'"
+        (click)="onTypeFilterChange('CUP')"
+      >
+        Cups
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p>Loading competitions...</p>
+    </div>
+  }
+
+  <!-- Error State -->
+  @if (error() && !isLoading()) {
+    <div class="error-container">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+        <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+        <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p>{{ error() }}</p>
+      <button class="retry-btn" (click)="loadCompetitions()">Try Again</button>
+    </div>
+  }
+
+  <!-- Competitions Grid -->
+  @if (!isLoading() && !error()) {
+    <div class="competitions-grid">
+      @for (competition of filteredCompetitions; track competition.id) {
+        <div class="competition-card">
+          <!-- Card Header -->
+          <div class="card-header">
+            @if (competition.emblem) {
+              <img 
+                [src]="competition.emblem" 
+                [alt]="competition.name"
+                class="competition-emblem"
+                (error)="$event.target.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ccircle cx=%2250%22 cy=%2250%22 r=%2245%22 fill=%22%23e0e0e0%22/%3E%3Cpath d=%22M50 20 L60 45 L85 45 L68 63 L75 90 L50 75 L25 90 L32 63 L15 45 L40 45 Z%22 fill=%22%23999%22/%3E%3C/svg%3E'"
+              />
+            }
+            <div class="competition-info">
+              <h2 class="competition-name">{{ competition.name }}</h2>
+              <div class="competition-meta">
+                <span class="competition-type" [class.league]="competition.type === 'LEAGUE'" [class.cup]="competition.type === 'CUP'">
+                  {{ competition.type }}
+                </span>
+                @if (competition.area.flag) {
+                  <img [src]="competition.area.flag" [alt]="competition.area.name" class="country-flag" />
+                }
+                <span class="country-name">{{ competition.area.name }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Current Season -->
+          @if (competition.currentSeason) {
+            <div class="season-info">
+              <div class="season-dates">
+                <div class="date-item">
+                  <span class="date-label">Start</span>
+                  <span class="date-value">{{ formatDate(competition.currentSeason.startDate) }}</span>
+                </div>
+                <div class="date-item">
+                  <span class="date-label">End</span>
+                  <span class="date-value">{{ formatDate(competition.currentSeason.endDate) }}</span>
+                </div>
+              </div>
+              
+              @if (competition.currentSeason.currentMatchday !== null) {
+                <div class="matchday-info">
+                  <span class="matchday-label">Matchday</span>
+                  <span class="matchday-value">{{ competition.currentSeason.currentMatchday }}</span>
+                </div>
+              }
+
+              @if (competition.currentSeason.winner) {
+                <div class="winner-info">
+                  <span class="winner-label">🏆 Winner</span>
+                  <span class="winner-name">{{ competition.currentSeason.winner.name }}</span>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Card Footer -->
+          <div class="card-footer">
+            <span class="seasons-count">{{ competition.numberOfAvailableSeasons }} seasons available</span>
+          </div>
+        </div>
+      }
+
+      @if (filteredCompetitions.length === 0) {
+        <div class="no-results">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 8v4M12 16h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <p>No competitions found</p>
+          <span>Try adjusting your search or filters</span>
+        </div>
+      }
+    </div>
+  }
+</div>
