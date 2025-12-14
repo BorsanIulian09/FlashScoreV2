@@ -18,6 +18,10 @@ export const routes: Routes = [
     loadComponent: () => import('./components/team-detail/team-detail.component').then(m => m.TeamDetailComponent)
   },
   {
+    path: 'players/:id',
+    loadComponent: () => import('./components/player-detail/player-detail.component').then(m => m.PlayerDetailComponent)
+  },
+  {
     path: '**',
     redirectTo: '',
     pathMatch: 'full'

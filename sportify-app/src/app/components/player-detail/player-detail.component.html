@@ -1,0 +1,213 @@
+<div class="player-detail-container">
+  <!-- Header Navigation -->
+  <div class="header-nav">
+    <button class="back-button" (click)="goBack()">← Back</button>
+  </div>
+
+  <!-- Error State -->
+  @if (error()) {
+    <div class="error-message">
+      <p>{{ error() }}</p>
+    </div>
+  }
+
+  <!-- Loading State -->
+  @if (isLoadingPlayer()) {
+    <div class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Loading player details...</p>
+    </div>
+  }
+
+  <!-- Player Content -->
+  @if (!isLoadingPlayer() && player()) {
+    <div class="player-content">
+      <!-- Player Header Section -->
+      <div class="player-header">
+        <div class="player-info">
+          <h1 class="player-name">{{ player()!.name }}</h1>
+          <p class="player-section">{{ getSection() }}</p>
+          
+          <div class="player-details-grid">
+            <div class="detail-item">
+              <span class="label">Age</span>
+              <span class="value">{{ getAge(player()!.dateOfBirth) }} years</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="label">Date of Birth</span>
+              <span class="value">{{ formatDate(player()!.dateOfBirth) }}</span>
+            </div>
+            
+            <div class="detail-item">
+              <span class="label">Nationality</span>
+              <span class="value">{{ player()!.nationality }}</span>
+            </div>
+
+            @if (player()!.position) {
+              <div class="detail-item">
+                <span class="label">Position</span>
+                <span class="value">{{ player()!.position }}</span>
+              </div>
+            }
+
+            @if (player()!.shirtNumber) {
+              <div class="detail-item">
+                <span class="label">Shirt Number</span>
+                <span class="value">{{ player()!.shirtNumber }}</span>
+              </div>
+            }
+          </div>
+
+          <!-- Team Info Card -->
+          @if (player()!.currentTeam) {
+            <div class="team-card">
+              <div class="team-badge">
+                <img 
+                  [src]="player()!.currentTeam!.crest" 
+                  [alt]="player()!.currentTeam!.name"
+                  class="team-crest"
+                  (error)="$event.target.src = 'assets/placeholder-badge.png'"
+                >
+              </div>
+              <div class="team-info">
+                <p class="label">Current Team</p>
+                <h3 class="team-name">{{ player()!.currentTeam!.name }}</h3>
+                <p class="team-shortname">{{ player()!.currentTeam!.shortName }}</p>
+              </div>
+              <button 
+                class="view-team-btn" 
+                (click)="navigateToTeam(player()!.currentTeam!.id)"
+              >
+                View Team →
+              </button>
+            </div>
+          }
+
+          <!-- Coach Contract Info -->
+          @if (player()!.contract && getSection() === 'Coach') {
+            <div class="contract-info">
+              <h3>Contract Information</h3>
+              <div class="contract-details">
+                <div class="contract-item">
+                  <span class="label">From</span>
+                  <span class="value">{{ formatDate(player()!.contract!.start) }}</span>
+                </div>
+                <div class="contract-item">
+                  <span class="label">Until</span>
+                  <span class="value">{{ formatDate(player()!.contract!.until) }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Matches Section -->
+      <div class="matches-section">
+        <h2>Recent Matches</h2>
+
+        @if (isLoadingMatches()) {
+          <div class="loading-matches">
+            <div class="spinner small"></div>
+            <p>Loading matches...</p>
+          </div>
+        } @else if (matches.length > 0) {
+          <div class="matches-info">
+            <p class="matches-count">Total matches: <strong>{{ totalMatches }}</strong></p>
+          </div>
+
+          <div class="matches-list">
+            @for (match of matches; track match.id) {
+              <div class="match-card" [class]="'status-' + getMatchStatusClass(match.status)">
+                <div class="match-date">
+                  <span class="date">{{ formatDate(match.utcDate) }}</span>
+                  <span class="time">{{ formatTime(match.utcDate) }}</span>
+                </div>
+
+                <div class="match-content">
+                  <div class="team home-team">
+                    <img 
+                      [src]="match.homeTeam.crest" 
+                      [alt]="match.homeTeam.name"
+                      class="team-logo"
+                      (error)="$event.target.src = 'assets/placeholder-badge.png'"
+                    >
+                    <div class="team-details">
+                      <p class="team-name">{{ match.homeTeam.name }}</p>
+                      <p class="team-short">{{ match.homeTeam.shortName }}</p>
+                    </div>
+                  </div>
+
+                  <div class="match-score">
+                    @switch (match.status) {
+                      @case ('FINISHED') {
+                        <div class="score-result">
+                          <span class="final">FINAL</span>
+                          <div class="score">
+                            <span class="home-score">{{ match.score.fullTime.home }}</span>
+                            <span class="separator">-</span>
+                            <span class="away-score">{{ match.score.fullTime.away }}</span>
+                          </div>
+                        </div>
+                      }
+                      @case ('LIVE') {
+                        <div class="score-result live">
+                          <span class="live-badge">LIVE</span>
+                          <div class="score">
+                            <span class="home-score">{{ match.score.fullTime.home }}</span>
+                            <span class="separator">-</span>
+                            <span class="away-score">{{ match.score.fullTime.away }}</span>
+                          </div>
+                        </div>
+                      }
+                      @case ('SCHEDULED') {
+                        <div class="score-result scheduled">
+                          <span class="status">{{ match.status }}</span>
+                        </div>
+                      }
+                      @default {
+                        <div class="score-result">
+                          <span class="status">{{ match.status }}</span>
+                        </div>
+                      }
+                    }
+                  </div>
+
+                  <div class="team away-team">
+                    <div class="team-details text-right">
+                      <p class="team-name">{{ match.awayTeam.name }}</p>
+                      <p class="team-short">{{ match.awayTeam.shortName }}</p>
+                    </div>
+                    <img 
+                      [src]="match.awayTeam.crest" 
+                      [alt]="match.awayTeam.name"
+                      class="team-logo"
+                      (error)="$event.target.src = 'assets/placeholder-badge.png'"
+                    >
+                  </div>
+                </div>
+
+                <div class="match-meta">
+                  @if (match.matchday) {
+                    <span class="badge">Matchday {{ match.matchday }}</span>
+                  }
+                  @if (match.stage) {
+                    <span class="badge">{{ match.stage }}</span>
+                  }
+                  @if (match.score.halfTime.home !== null && match.status === 'FINISHED') {
+                    <span class="badge secondary">HT: {{ match.score.halfTime.home }}-{{ match.score.halfTime.away }}</span>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <div class="no-matches">
+            <p>No matches found for this player.</p>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</div>

@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router,RouterLink } from '@angular/router';
 import { CompetitionsService } from '../../services/competitions.service';
 import { StandingsResponse, TableTeam } from '../../models/standings.model';
 import { MatchResponse, Match } from '../../models/match.model';
@@ -9,7 +9,7 @@ import { ScorersResponse } from '../../models/scorers.model';
 @Component({
   selector: 'app-competition-detail',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,RouterLink],
   templateUrl: './competition-detail.component.html',
   styleUrl: './competition-detail.component.css'
 })

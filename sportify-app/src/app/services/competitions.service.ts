@@ -6,6 +6,7 @@ import { StandingsResponse } from '../models/standings.model';
 import { Team } from '../models/team.model';
 import { MatchResponse } from '../models/match.model';
 import { ScorersResponse } from '../models/scorers.model';
+import { Player, PlayerMatchesResponse } from '../models/player.model';
 
 @Injectable({
   providedIn: 'root'
@@ -58,5 +59,47 @@ export class CompetitionsService {
       url += `?${params.join('&')}`;
     }
     return this.http.get<ScorersResponse>(url);
+  }
+
+  getPlayer(personId: number): Observable<Player> {
+    return this.http.get<Player>(`${this.apiUrl}/persons/${personId}`);
+  }
+
+  getPlayerMatches(
+    personId: number,
+    dateFrom?: string,
+    dateTo?: string,
+    status?: string,
+    competitions?: string,
+    limit?: number,
+    offset?: number
+  ): Observable<PlayerMatchesResponse> {
+    let url = `${this.apiUrl}/persons/${personId}/matches`;
+    const params: string[] = [];
+
+    if (dateFrom) {
+      params.push(`dateFrom=${dateFrom}`);
+    }
+    if (dateTo) {
+      params.push(`dateTo=${dateTo}`);
+    }
+    if (status) {
+      params.push(`status=${status}`);
+    }
+    if (competitions) {
+      params.push(`competitions=${competitions}`);
+    }
+    if (limit !== undefined) {
+      params.push(`limit=${limit}`);
+    }
+    if (offset !== undefined) {
+      params.push(`offset=${offset}`);
+    }
+
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+
+    return this.http.get<PlayerMatchesResponse>(url);
   }
 }
