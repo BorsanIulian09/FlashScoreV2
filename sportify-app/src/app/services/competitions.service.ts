@@ -46,6 +46,11 @@ export class CompetitionsService {
     return this.http.get<MatchResponse>(url);
   }
 
+  getMatchById(matchId: number): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/matches/${matchId}`);
+  }
+
+
   getScorers(competitionId: number, limit?: number, season?: number): Observable<ScorersResponse> {
     let url = `${this.apiUrl}/competitions/${competitionId}/scorers`;
     const params: string[] = [];

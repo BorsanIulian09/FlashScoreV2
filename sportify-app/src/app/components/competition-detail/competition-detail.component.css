@@ -628,6 +628,10 @@
   border-left: 4px solid #10b981;
 }
 
+.match-card.clickable {
+  cursor: pointer;
+}
+
 .match-card.postponed,
 .match-card.cancelled,
 .match-card.suspended {

@@ -200,7 +200,11 @@
       @if (!isLoadingMatches() && filteredMatches().length > 0) {
       <div class="matches-list">
         @for (match of filteredMatches(); track match.id) {
-        <div class="match-card" [class]="getMatchStatusClass(match.status)">
+        <div
+          class="match-card clickable"
+          [class]="getMatchStatusClass(match.status)"
+          [routerLink]="['/matches', match.id]"
+        >
           <div class="match-date-time">
             <span class="match-date">{{ formatDate(match.utcDate) }}</span>
             <span class="match-time">{{ formatTime(match.utcDate) }}</span>

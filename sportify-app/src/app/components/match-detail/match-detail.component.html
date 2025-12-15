@@ -1,0 +1,76 @@
+<div class="match-detail-container">
+
+  <!-- Header / Navigation -->
+  <div class="detail-header">
+    <button class="back-button" (click)="goBack()">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12.5 15L7.5 10L12.5 5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"/>
+      </svg>
+      <span>Back</span>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="detail-content" *ngIf="match()">
+
+    <!-- Score Card -->
+    <div class="match-header-card">
+      <div class="team home">
+        <img [src]="match().homeTeam.crest" class="team-crest" />
+        <span class="team-name">{{ match().homeTeam.name }}</span>
+      </div>
+
+      <div class="score-box">
+        <span class="score">
+          {{ match().score.fullTime.home }}
+          <span class="separator">-</span>
+          {{ match().score.fullTime.away }}
+        </span>
+        <span class="status">{{ match().status }}</span>
+      </div>
+
+      <div class="team away">
+        <img [src]="match().awayTeam.crest" class="team-crest" />
+        <span class="team-name">{{ match().awayTeam.name }}</span>
+      </div>
+    </div>
+
+    <!-- Match Meta -->
+    <div class="match-meta-card">
+      <div class="meta-item">
+        <span class="label">Competition</span>
+        <span class="value">{{ match().competition.name }}</span>
+      </div>
+
+      <div class="meta-item">
+        <span class="label">Matchday</span>
+        <span class="value">{{ match().matchday }}</span>
+      </div>
+
+      <div class="meta-item">
+        <span class="label">Date</span>
+        <span class="value">{{ match().utcDate | date:'medium' }}</span>
+      </div>
+
+      <div class="meta-item">
+        <span class="label">Referee</span>
+        <span class="value">
+          {{ match().referees?.[0]?.name || 'N/A' }}
+        </span>
+      </div>
+    </div>
+
+    <!-- Events Section -->
+    <div class="events-card">
+      <h2>Match Events</h2>
+      <p class="no-events">
+        Detailed events (goals, cards, substitutions) are not available for this match.
+      </p>
+    </div>
+
+  </div>
+</div>
