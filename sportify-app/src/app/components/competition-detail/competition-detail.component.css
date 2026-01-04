@@ -260,6 +260,10 @@
   background: #60a5fa;
 }
 
+.legend-color.conference-league {
+  background: #fbbf24;
+}
+
 .legend-color.relegation {
   background: #f87171;
 }
@@ -306,6 +310,11 @@
   text-align: center;
 }
 
+.form-col {
+  width: 150px;
+  text-align: center;
+}
+
 .points-col {
   width: 70px;
   text-align: center;
@@ -327,17 +336,29 @@
 
 .standings-table tbody tr.champions-league {
   background: rgba(74, 222, 128, 0.15);
-  border-left: 3px solid #4ade80;
+  border-left: 4px solid #4ade80;
 }
 
 .standings-table tbody tr.europa-league {
   background: rgba(96, 165, 250, 0.15);
-  border-left: 3px solid #60a5fa;
+  border-left: 4px solid #60a5fa;
+}
+
+.standings-table tbody tr.conference-league {
+  background: rgba(251, 191, 36, 0.15);
+  border-left: 4px solid #fbbf24;
+}
+
+.standings-table tbody tr.promotion,
+.standings-table tbody tr.qualification,
+.standings-table tbody tr.playoff {
+  background: rgba(74, 222, 128, 0.12);
+  border-left: 4px solid #4ade80;
 }
 
 .standings-table tbody tr.relegation {
   background: rgba(248, 113, 113, 0.15);
-  border-left: 3px solid #f87171;
+  border-left: 4px solid #f87171;
 }
 
 .standings-table td {
@@ -404,6 +425,110 @@
 .stat-cell.positive {
   color: #4ade80;
   font-weight: 600;
+}
+
+/* Goal Difference Visualization */
+.goal-diff-cell {
+  padding: 0.5rem 1rem !important;
+}
+
+.goal-diff-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 30px;
+}
+
+.goal-diff-bar {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 8px;
+  border-radius: 4px;
+  opacity: 0.3;
+  transition: all 0.3s ease;
+}
+
+.goal-diff-bar.positive {
+  background: #4ade80;
+}
+
+.goal-diff-bar.negative {
+  background: #f87171;
+}
+
+.standings-table tbody tr:hover .goal-diff-bar {
+  opacity: 0.6;
+  height: 10px;
+}
+
+.goal-diff-text {
+  position: relative;
+  z-index: 1;
+  font-weight: 600;
+  font-size: 0.875rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.goal-diff-text.positive {
+  color: #4ade80;
+}
+
+.goal-diff-text.negative {
+  color: #f87171;
+}
+
+/* Form Indicators */
+.form-cell {
+  padding: 0.5rem 0.75rem !important;
+}
+
+.form-indicators {
+  display: flex;
+  gap: 0.25rem;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.form-badge {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+}
+
+.form-badge.w {
+  background: #4ade80;
+  color: #064e3b;
+}
+
+.form-badge.d {
+  background: #fbbf24;
+  color: #78350f;
+}
+
+.form-badge.l {
+  background: #f87171;
+  color: #7f1d1d;
+}
+
+.form-badge:hover {
+  transform: scale(1.15);
+}
+
+.no-form {
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  font-size: 0.875rem;
 }
 
 .stat-cell.negative {

@@ -89,12 +89,57 @@ export class CompetitionDetailComponent implements OnInit {
     const data = this.standingsData();
     if (!data || !data.competition) return '';
     
-    // For most leagues, top 4 is Champions League, 5-7 might be Europa League, etc.
-    // This is a simplified version - you can customize based on competition rules
-    if (position <= 4) return 'champions-league';
-    if (position <= 6) return 'europa-league';
-    if (position >= this.standingsTable.length - 3) return 'relegation';
+    const totalTeams = this.standingsTable.length;
+    const competitionCode = data.competition.code;
+    
+    // Different zones for different competitions
+    // Premier League, La Liga, Serie A, Bundesliga, Ligue 1
+    if (['PL', 'PD', 'SA', 'BL1', 'FL1'].includes(competitionCode)) {
+      if (position <= 4) return 'champions-league';
+      if (position === 5) return 'europa-league';
+      if (position === 6) return 'conference-league';
+      if (position >= totalTeams - 2) return 'relegation';
+    }
+    // Champions League zones
+    else if (competitionCode === 'CL') {
+      if (position <= 2) return 'qualification';
+      if (position === 3) return 'europa-league';
+    }
+    // Default zones
+    else {
+      if (position <= 2) return 'promotion';
+      if (position <= 4) return 'playoff';
+      if (position >= totalTeams - 2) return 'relegation';
+    }
+    
     return '';
+  }
+
+  getTeamForm(teamId: number): string[] {
+    const matches = this.matchesData()?.matches || [];
+    const teamMatches = matches
+      .filter(m => 
+        m.status === 'FINISHED' && 
+        (m.homeTeam.id === teamId || m.awayTeam.id === teamId)
+      )
+      .sort((a, b) => new Date(b.utcDate).getTime() - new Date(a.utcDate).getTime())
+      .slice(0, 5);
+
+    return teamMatches.map(match => {
+      const isHome = match.homeTeam.id === teamId;
+      const winner = match.score.winner;
+
+      if (winner === 'DRAW') return 'D';
+      if (winner === 'HOME_TEAM') return isHome ? 'W' : 'L';
+      if (winner === 'AWAY_TEAM') return isHome ? 'L' : 'W';
+      return '';
+    }).filter(result => result !== '');
+  }
+
+  getGoalDifferenceWidth(goalDiff: number): number {
+    const maxGD = Math.max(...this.standingsTable.map(t => Math.abs(t.goalDifference)));
+    if (maxGD === 0) return 0;
+    return Math.min((Math.abs(goalDiff) / maxGD) * 100, 100);
   }
 
   viewTeam(teamId: number): void {

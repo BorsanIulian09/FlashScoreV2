@@ -106,6 +106,10 @@
             <span>Europa League</span>
           </div>
           <div class="legend-item">
+            <span class="legend-color conference-league"></span>
+            <span>Conference League</span>
+          </div>
+          <div class="legend-item">
             <span class="legend-color relegation"></span>
             <span>Relegation</span>
           </div>
@@ -125,6 +129,7 @@
               <th class="stat-col">GF</th>
               <th class="stat-col">GA</th>
               <th class="stat-col">GD</th>
+              <th class="form-col">Form</th>
               <th class="points-col">Pts</th>
             </tr>
           </thead>
@@ -150,9 +155,31 @@
               <td class="stat-cell">{{ team.lost }}</td>
               <td class="stat-cell">{{ team.goalsFor }}</td>
               <td class="stat-cell">{{ team.goalsAgainst }}</td>
-              <td class="stat-cell" [class.positive]="team.goalDifference > 0"
-                [class.negative]="team.goalDifference < 0">
-                {{ team.goalDifference > 0 ? '+' : '' }}{{ team.goalDifference }}
+              <td class="stat-cell goal-diff-cell">
+                <div class="goal-diff-container">
+                  <div class="goal-diff-bar"
+                       [class.positive]="team.goalDifference > 0"
+                       [class.negative]="team.goalDifference < 0"
+                       [style.width.%]="getGoalDifferenceWidth(team.goalDifference)">
+                  </div>
+                  <span class="goal-diff-text" 
+                        [class.positive]="team.goalDifference > 0"
+                        [class.negative]="team.goalDifference < 0">
+                    {{ team.goalDifference > 0 ? '+' : '' }}{{ team.goalDifference }}
+                  </span>
+                </div>
+              </td>
+              <td class="form-cell">
+                <div class="form-indicators">
+                  @for (result of getTeamForm(team.team.id); track $index) {
+                    <span class="form-badge" [class]="result.toLowerCase()">
+                      {{ result }}
+                    </span>
+                  }
+                  @if (getTeamForm(team.team.id).length === 0) {
+                    <span class="no-form">-</span>
+                  }
+                </div>
               </td>
               <td class="points-cell">
                 <strong>{{ team.points }}</strong>
