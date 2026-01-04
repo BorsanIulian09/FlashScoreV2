@@ -91,3 +91,26 @@ export interface MatchResponse {
   matches: Match[];
 }
 
+export interface Head2HeadAggregates {
+  numberOfMatches: number;
+  totalGoals: number;
+  homeTeam: {
+    id: number;
+    name: string;
+    wins: number;
+    draws: number;
+    losses: number;
+  };
+  awayTeam: {
+    id: number;
+    name: string;
+    wins: number;
+    draws: number;
+    losses: number;
+  };
+}
+
+export interface Head2HeadResponse {
+  aggregates: Head2HeadAggregates;
+  matches: Match[];
+}

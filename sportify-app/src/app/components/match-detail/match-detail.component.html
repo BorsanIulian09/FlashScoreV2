@@ -72,5 +72,74 @@
       </p>
     </div>
 
+    <!-- Head-to-Head Section -->
+    <div class="h2h-card" *ngIf="head2head() && calculatedStats()">
+      <h2>⚔️ Head-to-Head Record</h2>
+      
+      <div class="h2h-stats">
+        <!-- Team Statistics -->
+        <div class="team-stats home-team">
+          <div class="team-name">{{ head2head()!.aggregates.homeTeam.name }}</div>
+          <div class="stat-box wins">
+            <div class="stat-value">{{ calculatedStats()!.homeWins }}</div>
+            <div class="stat-label">Wins</div>
+          </div>
+          <div class="win-percentage">
+            {{ getWinPercentage(calculatedStats()!.homeWins, head2head()!.aggregates.numberOfMatches) }}%
+          </div>
+        </div>
+
+        <div class="center-stats">
+          <div class="stat-box draws">
+            <div class="stat-value">{{ calculatedStats()!.draws }}</div>
+            <div class="stat-label">Draws</div>
+          </div>
+          <div class="matches-info">
+            <span class="matches-count">{{ head2head()!.aggregates.numberOfMatches }}</span>
+            <span class="matches-label">Total Matches</span>
+          </div>
+          <div class="stat-box goals">
+            <div class="stat-value">{{ head2head()!.aggregates.totalGoals }}</div>
+            <div class="stat-label">Total Goals</div>
+          </div>
+        </div>
+
+        <div class="team-stats away-team">
+          <div class="team-name">{{ head2head()!.aggregates.awayTeam.name }}</div>
+          <div class="stat-box wins">
+            <div class="stat-value">{{ calculatedStats()!.awayWins }}</div>
+            <div class="stat-label">Wins</div>
+          </div>
+          <div class="win-percentage">
+            {{ getWinPercentage(calculatedStats()!.awayWins, head2head()!.aggregates.numberOfMatches) }}%
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Matches -->
+      <div class="recent-matches" *ngIf="head2head()!.matches.length > 0">
+        <h3>Recent Encounters</h3>
+        <div class="matches-list">
+          <div class="h2h-match" *ngFor="let h2hMatch of head2head()!.matches.slice(0, 5)">
+            <div class="match-date">{{ h2hMatch.utcDate | date:'dd MMM yyyy' }}</div>
+            <div class="match-teams">
+              <span class="team-name">{{ h2hMatch.homeTeam.name }}</span>
+              <span class="match-score">
+                {{ h2hMatch.score.fullTime.home }} - {{ h2hMatch.score.fullTime.away }}
+              </span>
+              <span class="team-name">{{ h2hMatch.awayTeam.name }}</span>
+            </div>
+            <div class="match-competition">{{ h2hMatch.competition.name }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State for H2H -->
+    <div class="h2h-card loading" *ngIf="isLoadingH2H()">
+      <h2>⚔️ Head-to-Head Record</h2>
+      <p class="loading-text">Loading head-to-head data...</p>
+    </div>
+
   </div>
 </div>

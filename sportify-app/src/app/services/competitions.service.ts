@@ -107,4 +107,34 @@ export class CompetitionsService {
 
     return this.http.get<PlayerMatchesResponse>(url);
   }
+
+  getHead2Head(
+    matchId: number,
+    limit?: number,
+    dateFrom?: string,
+    dateTo?: string,
+    competitions?: string
+  ): Observable<any> {
+    let url = `${this.apiUrl}/matches/${matchId}/head2head`;
+    const params: string[] = [];
+
+    if (limit !== undefined) {
+      params.push(`limit=${limit}`);
+    }
+    if (dateFrom) {
+      params.push(`dateFrom=${dateFrom}`);
+    }
+    if (dateTo) {
+      params.push(`dateTo=${dateTo}`);
+    }
+    if (competitions) {
+      params.push(`competitions=${competitions}`);
+    }
+
+    if (params.length > 0) {
+      url += `?${params.join('&')}`;
+    }
+
+    return this.http.get<any>(url);
+  }
 }
